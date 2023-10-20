@@ -10,29 +10,36 @@ class Pokemon():
         self.move_name = ''
         self.move_action = ''
         self.move_power = ''
+        self.lv = abilities['lv']
         self.attack = abilities['attack']
         self.defence = abilities['defence']
         self.speed = abilities['speed']
         self.hp = abilities['hp']
         self.attack_to_rival = 0
 
+    #showing pokemon information
     def show(self, pokemon2):
-        print('pokemon 1:',self.name,'\n','type:',self.types,'\n','HP:',self.hp * "*",'\n')
-        print('pokemon 2:',pokemon2.name,'\n','type:',pokemon2.types,'\n','HP:',pokemon2.hp * "*",'\n')
-        
-    def hp_defence(self):
-        for i in range(int(self.hp + 0.01*self.defence)):
-            self.hp += 1
-        return self.hp
+        print('pokemon 1:',self.name,'\n','type:',self.types,'\n','lv:',self.lv,'\n','HP:',self.hp * "*",'\n')
+        print('pokemon 2:',pokemon2.name,'\n','type:',pokemon2.types,'\n','lv:',pokemon2.lv,'\n','HP:',pokemon2.hp * "*",'\n')
+        print("-" * 50)
 
+    #calculating damage to target's pokemon
+    def damage_to_rival(self, pokemon2):
+        damage =int( 2 + (((2 * self.lv / 5) + 2 * self.move_power * (self.attack_to_rival  / pokemon2.defence)) / 50))
+        return damage
+
+    #giving command to pokemon
     def move_command(self):
-            self.move_action = int(input('What is your action? '))
-            self.move_name = self.moveList[self.move_action - 1]
-            self.move_type = self.move[self.move_name]['Type']
-            self.move_power = self.move[self.move_name]['Power']        
+        self.move_action = int(input('What is your action? \n'))
+        self.move_name = self.moveList[self.move_action - 1]
+        self.move_type = self.move[self.move_name]['Type']
+        self.move_power = self.move[self.move_name]['Power']
 
-    def fight(self, pokemon2):
-        strongerAttackTypes = {
+
+    #calculating attack to target's pokemon from different types
+    def attack_sum(self, pokemon2):
+      #stronger attack types
+      strongerAttackTypes = {
             'Fire': ['Grass', 'Ice', 'Flying'],
             'Water': ['Fire', 'Ground'],
             'Grass': ['Water', 'Ground'],
@@ -42,7 +49,8 @@ class Pokemon():
             'Flying': ['Grass']
             }
 
-        weakerAttackTypes = {
+      #weaker attack types
+      weakerAttackTypes = {
             'Fire': ['Water', 'Ground','Fire'],
             'Water': ['Grass', 'Electric','Water'],
             'Grass': ['Fire', 'Flying', 'Electric'],
@@ -51,115 +59,102 @@ class Pokemon():
             'Electric': ['Electric', 'Grass', 'Ground'],
             'Flying': ['Electric']
             }
-        
-        print('pokemon fight starts \n')
-        self.show(pokemon2)
+      try:
+        if (pokemon2.types in strongerAttackTypes[self.move_type]):
+          self.attack_to_rival = self.attack * 2
+          print("Its super effective!")
+        elif (pokemon2.types in weakerAttackTypes[self.move_type]):
+          self.attack_to_rival = int(self.attack * 0.5)
+          print("Its not very effective...")
+      except KeyError:
+        self.attack_to_rival = self.attack
 
-        while ((self.hp > 0) and (pokemon2.hp > 0)):
-            Round = 1
+    #pokemon battle
+    def fight(self, pokemon2):
+      print('pokemon fight starts \n')
+      self.show(pokemon2)
+
+      Round = 1
+      while ((self.hp > 0) and (pokemon2.hp > 0)):
+
             print('Round ',Round)
-            print('Player 1', '\n', self.name,' move')
-            for i, move in enumerate(self.moveList):
+            print('Player 1', '\n', 'Go !',self.name,'\n',' move')
+            for i, move in enumerate(list(self.move.items())):
                 print(i+1, move)
-##            self.move_action = int(input('What is your action? '))
-##            self.move_name = self.moveList[self.move_action - 1]
-##            self.move_type = self.move[self.move_name]['Type']
-##            self.move_power = self.move[self.move_name]['Power']
             self.move_command()
-            
-            print('Player 2', '\n', pokemon2.name,' move')
-            for i, move in enumerate(PM2_moveList):
+
+            print('Player 2', '\n', 'Go !',pokemon2.name,'\n',' move')
+            for i, move in enumerate(list(pokemon2.move.items())):
                 print(i+1, move)
-##            pokemon2.move_action = int(input('What is your action? '))
-##            pokemon2.move_name = pokemon2.moveList[pokemon2.move_action - 1]
-##            pokemon2.move_type = pokemon2.move[pokemon2.move_name]['Type']
-##            pokemon2.move_power = pokemon2.move[pokemon2.move_name]['Power']
             pokemon2.move_command()
 
-##            if self.speed >= pokemon2.speed :
-##                try:
-##                    if (pokemon2.types in strongerAttackTypes[PM1_move_type]):
-##                        attack_to_PM2 = self.attack * 2
-##                    elif (pokemon2.types in weakerAttackTypes[PM1_move_type]):
-##                        attack_to_PM2 = round(self.attack * 0.5)
-##                except KeyError:
-##                    attack_to_PM2 = self.attack
-##                print(attack_to_PM2)
-##                pokemon2.hp -= attack_to_PM2
-##                print(pokemon2.hp)
-##                pokemon2.hp += pokemon2.hp_defence()
-##                print(pokemon2.hp)
-##                self.show(pokemon2)
-##                if pokemon2.hp <= 0:
-##                    print('end game! /n')
-##                    print('Player 1 wins!')
-##                    break
-##                
-##                try:
-##                    if (self.types in strongerAttackTypes[PM2_move_type]):
-##                        self.attack_to_rival = pokemon2.attack * 2
-##                    elif (self.types in weakerAttackTypes[PM2_move_type]):
-##                        self.attack_to_rival = round(pokemon2.attack * 0.5)
-##                except KeyError:
-##                    self.attack_to_rival = pokemon2.attack
-##                print(self.attack_to_rival)
-##                self.hp -= attack_to_PM1
-##                print(self.hp)
-##                self.hp += self.hp_defence()
-##                print(self.hp)
-##                self.show(pokemon2)
-##                if self.hp <= 0:
-##                    print('end game! /n')
-##                    print('Player 2 wins!')
-##                    break
-##
-##            else:
-##                try:
-##                    if (self.types in strongerAttackTypes[PM2_move_type]):
-##                        attack_to_PM1 = pokemon2.attack * 2
-##                    elif (self.types in weakerAttackTypes[PM2_move_type]):
-##                        attack_to_PM1 = round(pokemon2.attack * 0.5)
-##                except KeyError:
-##                    attack_to_PM1 = pokemon2.attack
-##                print(attack_to_PM1)
-##                self.hp -= attack_to_PM1
-##                print(self.hp)
-##                self.hp += self.hp_defence()
-##                print(self.hp)
-##                self.show(pokemon2)
-##                if self.hp <= 0:
-##                    print('end game! /n')
-##                    print('Player 2 wins!')
-##                    break
-##
-##                try:
-##                    if (pokemon2.types in strongerAttackTypes[PM1_move_type]):
-##                        attack_to_PM2 = self.attack * 2
-##                    elif (pokemon2.types in weakerAttackTypes[PM1_move_type]):
-##                        attack_to_PM2 = round(self.attack * 0.5)
-##                except KeyError:
-##                    attack_to_PM2 = self.attack
-##                print(attack_to_PM2)
-##                pokemon2.hp -= attack_to_PM2
-##                print(pokemon2.hp)
-##                pokemon2.hp += pokemon2.hp_defence()
-##                print(pokemon2.hp)
-##                self.show(pokemon2)
-##                if pokemon2.hp <= 0:
-##                    print('end game! /n')
-##                    print('Player 1 wins!')
-##                    break
-                
-            Round += 1
+            if self.speed >= pokemon2.speed :
+              #player 1 turn
+              print(self.name, ' uses ', self.move_name, "! \n")
+              self.attack_sum(pokemon2)
+              #rival_hp_loss_from_self = self.damage_to_rival()
+              pokemon2.hp -= self.damage_to_rival(pokemon2)
+              self.show(pokemon2)
+              if pokemon2.hp <= 0:
+                  print('...',pokemon2.name,'fainted... /n')
+                  print('Player 1 wins!')
+                  break
 
-            
-            
+              #player 2 turn
+              print(pokemon2.name, ' uses ', pokemon2.move_name, "! \n")
+              pokemon2.attack_sum(self)
+              #rival_hp_loss_from_PM2 = pokemon2.damage_to_rival()
+              self.hp -= pokemon2.damage_to_rival(self)
+              self.show(pokemon2)
+              if self.hp <= 0:
+                  print('...',self.name,'fainted... /n')
+                  print('Player 2 wins!')
+                  break
 
-                
-Charmander = Pokemon('Charmander', 'Fire', {'Catch':'Normal', 'Ember':'Fire'}, {'attack':12, 'defence': 8, 'speed': 10, 'hp': 20})
-Squirtle = Pokemon('Squirtle', 'Water', {'Tackle':'Normal', 'Water Gun':'Water'}, {'attack':10, 'defence': 12, 'speed': 8, 'hp': 20})
+            else:
+              #player 2 turn
+              print(pokemon2.name, ' uses ', pokemon2.move_name, "! \n")
+              pokemon2.attack_sum(self)
+              #rival_hp_loss_from_PM2 = pokemon2.damage_to_rival()
+              self.hp -= pokemon2.damage_to_rival(self)
+              self.show(pokemon2)
+              if self.hp <= 0:
+                  print('...',self.name,'fainted... /n')
+                  print('Player 2 wins!')
+                  break
 
-##Charmander.fight(Squirtle)
-##print(list(Charmander.move.keys())[0])
+              #player 1 turn
+              print(self.name, ' uses ', self.move_name, "! \n")
+              self.attack_sum(pokemon2)
+              #rival_hp_loss_from_self = self.damage_to_rival()
+              pokemon2.hp -= self.damage_to_rival(pokemon2)
+              self.show(pokemon2)
+              if pokemon2.hp <= 0:
+                  print('...',pokemon2.name,'fainted... /n')
+                  print('Player 1 wins!')
+                  break
+            Round = Round + 1
+            print("=" * 50)
 
-print(Charmander.moveList)
+
+
+
+if __name__ == '__main__':
+  Grookey = Pokemon('Grookey', 'Grass', {'Catch':{'Type':'Normal','Power':20}, 'Branch Poke':{'Type':'Grass','Power':40}}, {'lv': 5, 'attack':10, 'defence': 10, 'speed': 10, 'hp': 15})
+  Scorbunny = Pokemon('Scorbunny', 'Fire', {'Kick':{'Type':'Normal','Power':20}, 'Ember':{'Type':'Fire','Power':40}}, {'lv': 5, 'attack':12, 'defence': 8, 'speed': 11, 'hp': 15})
+  Sobble = Pokemon('Sobble', 'Water', {'Tackle':{'Type':'Normal','Power':20}, 'Water Gun':{'Type':'Water','Power':40}}, {'lv': 5, 'attack':11, 'defence': 9, 'speed': 12, 'hp': 15})
+
+  Thwackey = Pokemon('Thwackey', 'Grass', {'Double Hit':{'Type':'Normal','Power':70}, 'Razor Leaf':{'Type':'Grass','Power':55}, 'Acrobatics':{'Type':'Flying','Power':55}}, {'lv': 20, 'attack':20, 'defence': 20, 'speed': 20, 'hp': 40})
+  Raboot = Pokemon('Raboot', 'Fire', {'Double Kick':{'Type':'Normal','Power':70}, 'Flame Charge':{'Type':'Fire','Power':50}, 'Mud Shot':{'Type':'Ground','Power':55}}, {'lv': 20, 'attack':24, 'defence': 16, 'speed': 22, 'hp': 40})
+  Drizzile = Pokemon('Drizzile', 'Water', {'Pound':{'Type':'Normal','Power':60}, 'Water Pulse':{'Type':'Water','Power':60}, 'Ice Shard':{'Type':'Ice','Power':60}}, {'lv': 20, 'attack':22, 'defence': 18, 'speed': 24, 'hp': 40})
+
+  Rillaboom = Pokemon('Rillaboom', 'Grass', {'Slam':{'Type':'Normal','Power':80}, 'Wood Hammer':{'Type':'Grass','Power':90}, 'Acrobatics':{'Type':'Flying','Power':55}, 'Earthquake':{'Type':'Ground','Power':100}}, {'lv': 35, 'attack':33, 'defence': 33, 'speed': 24, 'hp': 60})
+  Cinderace = Pokemon('Cinderace', 'Fire', {'Headbutt':{'Type':'Normal','Power':70}, 'Flame Ball':{'Type':'Fire','Power':100}, 'Mud Shot':{'Type':'Ground','Power':55}, 'Electro Ball':{'Type':'Electirc','Power':100}}, {'lv': 35, 'attack':37, 'defence': 21, 'speed': 35, 'hp': 60})
+  Inteleon = Pokemon('Inteleon', 'Water', {'Swift':{'Type':'Normal','Power':60}, 'Liquidation':{'Type':'Water','Power':85}, 'Ice Shard':{'Type':'Ice','Power':60}, 'Air Cutter':{'Type':'Flying','Power':60}}, {'lv': 35, 'attack':33, 'defence': 27, 'speed': 36, 'hp': 60})
+
+  Pikachu = Pokemon('Pikachu', 'Electric', {'Thunderbolt':{'Type':'Electric','Power':90}, 'Dig':{'Type':'Ground','Power':80}, 'Surf':{'Type':'Water','Power':90}, 'Fly':{'Type':'Flying','Power':90}}, {'lv': 35, 'attack':29, 'defence': 27, 'speed': 40, 'hp': 60})
+
+  Scorbunny.fight(Inteleon)
+#print(list(Charmander.move.keys())[0])
+
+##print(Charmander.moveList)
