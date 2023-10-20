@@ -155,6 +155,4 @@ if __name__ == '__main__':
   Pikachu = Pokemon('Pikachu', 'Electric', {'Thunderbolt':{'Type':'Electric','Power':90}, 'Dig':{'Type':'Ground','Power':80}, 'Surf':{'Type':'Water','Power':90}, 'Fly':{'Type':'Flying','Power':90}}, {'lv': 35, 'attack':29, 'defence': 27, 'speed': 40, 'hp': 60})
 
   Scorbunny.fight(Inteleon)
-#print(list(Charmander.move.keys())[0])
 
-##print(Charmander.moveList)
